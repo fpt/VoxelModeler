@@ -49,8 +49,8 @@ export const createCube = (x: number, y: number, z: number) => {
 
   const geom = createCubeGeometry();
   const material = new THREE.ShaderMaterial({
-    vertexShader: (document.querySelector('#vs') as any).textContent,
-    fragmentShader: (document.querySelector('#fs') as any).textContent,
+    vertexShader: require("./glsl/PickVertex.glsl"),
+    fragmentShader: require("./glsl/PickFragment.glsl"),
     uniforms: {
       uIndex: { type: '3iv', value: [x, y, z] }
     },
@@ -79,3 +79,37 @@ export const normalFromFace = (f: number) => {
   }
   return undefined;
 };
+
+const divColor = (color: number, div: number) =>
+  ((color >> 16) / div << 16) | ((color >> 8 & 0xFF) / div << 8) | ((color & 0xFF) / div)
+
+const addColor = (col1: number, col2: number) =>
+  (((col1 >> 16) + (col2 >> 16) & 0xFF) << 16) |
+  (((col1 >> 8) + (col2 >> 8) & 0xFF) << 8) |
+  ((col1 + col2) & 0xFF)
+
+export const createColorCube = (x: number, y: number, z: number, color: number) => {
+  const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+  const material = new THREE.MeshPhongMaterial({
+    color,
+    shininess: 100,
+    emissive: divColor(color, 4),
+    specular: addColor(color, 0x101010),
+    side: THREE.DoubleSide,
+  });
+  const mesh = new THREE.Mesh( geometry, material );
+  mesh.position.set(x, y, z);
+  return mesh;  
+};
+
+export const createSelectionCube = () => {
+  const geometry = new THREE.BoxGeometry(1.1, 1.1, 1.1);
+  const material = new THREE.ShaderMaterial({
+    vertexShader: require("./glsl/CursorVertex.glsl"),
+    fragmentShader: require("./glsl/CursorFragment.glsl"),
+    uniforms: {
+      uIndex: { type: 'i', value: 1 }
+    },
+  });
+  return new THREE.Mesh(geometry, material);
+}

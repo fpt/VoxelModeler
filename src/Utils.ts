@@ -12,11 +12,13 @@ export const Logger = {
 };
 
 
-export const pixelInputToCanvasCoord = (event: any, canvas: HTMLCanvasElement) => {
-  var x = event.clientX,
-    y = event.clientY,
-    rect = event.target.getBoundingClientRect();
+export const pixelInputToCanvasCoord = (clientX: number, clientY: number, canvas: HTMLCanvasElement) => {
+  let x = clientX;
+  let y = clientY;
+  const rect = canvas.getBoundingClientRect();
+
   x = x - rect.left;
   y = rect.bottom - y;
+
   return { x, y };
 };

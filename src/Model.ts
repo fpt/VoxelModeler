@@ -4,7 +4,7 @@ interface ICube {
     x: number;
     y: number;
     z: number;
-    obj: any;
+    objs?: any[];
     id: number;
 }
 
@@ -16,14 +16,14 @@ class Model {
     private _m: IModel = {};
     private _arr: ICube[] = [];
 
-    add(x: number, y: number, z: number, obj: any) {
+    add(x: number, y: number, z: number, objs?: any[]) {
         const idx = `x${x}_y${y}_z${z}`;
 
         if (idx in this._m) {
             return this._m[idx];
         }
 
-        const m = { x, y, z, obj, id: -1 };
+        const m = { x, y, z, objs, id: -1 };
         this._m[idx] = m;
         const id = this._arr.push(m);
         m.id = id;

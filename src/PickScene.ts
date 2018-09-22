@@ -32,12 +32,23 @@ export class PickScene {
     this.scene.add(cube);
   };
 
-  getTarget() {
-    return this._target;
+  getTargetTexture() {
+    if (!this._target) {
+      return;
+    }
+    return this._target.texture;
   }
 
-  readRenderedPixel(event: MouseEvent, renderer: THREE.WebGLRenderer, canvas: HTMLCanvasElement) {
-    const point = pixelInputToCanvasCoord(event, canvas);
+  resize(width: number, height: number) {
+    if (!this._target) {
+      return;
+    }
+    const target = this._target;
+    target.setSize(width, height)
+  }
+
+  readRenderedPixel(clientX: number, clientY: number, renderer: THREE.WebGLRenderer, canvas: HTMLCanvasElement) {
+    const point = pixelInputToCanvasCoord(clientX, clientY, canvas);
     if (!this._target || !point) {
       return;
     }
@@ -52,12 +63,13 @@ export class PickScene {
 // decoders
 
 const decodeFace = (v: number) => 
-  (1.0 - (v / 255.0)) * 10.0;
+  255.0 - v;
 
-const decodeIndex = (m: number, v: number) =>
-  Math.round(((Math.abs(m) / 2.0 + 0.25) - v / 255.0) * 10.0);
+const decodeIndex = (v: number) =>
+  Math.round(v - 128.0);
 
 export const decodePixel = (r: number, g: number, b: number, a: number) => {
+  //console.log(`${r},${g},${b},${a}`)
   if (a === 255) {
     return;
   }
@@ -69,9 +81,9 @@ export const decodePixel = (r: number, g: number, b: number, a: number) => {
     return;
   }
 
-  const x = decodeIndex(n[0], r);
-  const y = decodeIndex(n[1], g);
-  const z = decodeIndex(n[2], b);
+  const x = decodeIndex(r);
+  const y = decodeIndex(g);
+  const z = decodeIndex(b);
   // Logger.log([x, y, z, face]);
 
   return { x, y, z, face };

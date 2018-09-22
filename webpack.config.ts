@@ -20,11 +20,22 @@ const rules: NewUseRule[] = [
     use: {
       loader: "ts-loader"
     }
+  },
+  {
+    test: /\.(glsl|vs|fs)$/,
+    use: {
+      loader: 'shader-loader',
+      options: {
+        glsl: {
+          chunkPath: path.resolve("/src/glsl")
+        }
+      },
+    },
   }
 ];
 
 const config: Config = {
-  entry: path.join(__dirname, "./src/App.ts"),
+  entry: path.join(__dirname, "./src/App.tsx"),
   devtool: "inline-source-map",
   output: {
     path: path.join(__dirname, "./dist"),
